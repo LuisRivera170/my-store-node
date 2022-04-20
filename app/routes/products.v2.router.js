@@ -1,18 +1,13 @@
 const { faker } = require('@faker-js/faker');
 const express = require('express');
+const ProductService = require('../services/product.service');
 
 const router = express.Router();
+const productService = new ProductService();
 
 router.get('', (req, res) => {
-  const products = [];
-  const { limit = 10, offset = 0 } = req.query;
-  for (let index = 0; index < limit; index++) {
-    products.push({
-      name: faker.commerce.productName(),
-      price: parseInt(faker.commerce.price(), 10),
-      image: faker.image.imageUrl()
-    });
-  }
+  const { limit, offset = 0 } = req.query;
+  const products = productService.find(+limit);
   res.json(products);
 });
 
@@ -20,58 +15,39 @@ router.get('', (req, res) => {
  * deben ir después de los enpoints estáticos
 */
 router.get('/filter', (_, res) => {
-  res.json({
-    name: faker.commerce.productName(),
-    price: parseInt(faker.commerce.price(), 10),
-    image: faker.image.imageUrl()
-  });
+  res.json(productService.filter());
 });
 
 router.get('/:id', (req, res) => {
   const { id } = req.params;
-  if (id === '999') {
-    res
-      .status(404)
-      .json({
-        message: 'Not found'
-      });
-  } else {
-    res
-      .status(200)
-      .json({
-        id,
-        name: faker.commerce.productName(),
-        price: parseInt(faker.commerce.price(), 10),
-        image: faker.image.imageUrl()
-      });
-  }
+  const product = productService.findOne(+id);
+  res.json(product);
 });
 
 router.post('/', (req, res) => {
   const body = req.body;
+  const newProduct = productService.create(body);
   res
     .status(201)
     .json({
       message: 'created',
-      data: body
+      data: newProduct
     });
 });
 
 router.patch('/:id', (req, res) => {
   const { id } = req.params;
   const body = req.body;
-  res.json({
-    message: 'updated',
-    data: body,
-    id
-  });
+  const productUpdated = productService.update(+id, body);
+  res.json(productUpdated);
 });
 
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
+  const deletedProduct = productService.delete(+id);
   res.json({
     message: 'deleted',
-    id
+    deletedProduct
   })
 });
 

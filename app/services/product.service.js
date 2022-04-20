@@ -20,7 +20,7 @@ class ProductService {
     }
   }
 
-  create(data) {
+  async create(data) {
       Object.keys(data).forEach((key) => this.validProductElements.includes(key) || delete data[key]);
       const newProduct = {
         id: this.products.length,
@@ -30,19 +30,23 @@ class ProductService {
       return newProduct;
   }
 
-  find(limit) {
-    return limit ? this.products.slice(0, limit) : this.products;
+  async find(limit) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(limit ? this.products.slice(0, limit) : this.products);
+      }, 1000);
+    });
   }
 
-  findOne(id) {
+  async findOne(id) {
     return this.products.find(product => product.id === id);
   }
 
-  filter() {
+  async filter() {
     return this.products[Math.floor(Math.random()*this.products.length)];
   }
 
-  update(id, data) {
+  async update(id, data) {
     const productIndex = this.products.findIndex(product => product.id === id);
     if (productIndex === -1) {
       throw new Error('Product not found');
@@ -56,7 +60,7 @@ class ProductService {
     return this.products[productIndex];
   }
 
-  delete(id) {
+  async delete(id) {
     const productIndex = this.products.findIndex(product => product.id === id);
     if (productIndex === -1) {
       throw new Error('Product not found');

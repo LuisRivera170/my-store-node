@@ -5,28 +5,29 @@ const ProductService = require('../services/product.service');
 const router = express.Router();
 const productService = new ProductService();
 
-router.get('', (req, res) => {
-  const { limit, offset = 0 } = req.query;
-  const products = productService.find(+limit);
+router.get('', async (req, res) => {
+  const { limit } = req.query;
+  const products = await productService.find(+limit);
   res.json(products);
 });
 
 /* Nota: Para evitar conflictos, los enpoints con rutas dinámicas
  * deben ir después de los enpoints estáticos
 */
-router.get('/filter', (_, res) => {
-  res.json(productService.filter());
+router.get('/filter', async (_, res) => {
+  const randomProduct = await productService.filter();
+  res.json(randomProduct);
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const { id } = req.params;
-  const product = productService.findOne(+id);
+  const product = await productService.findOne(+id);
   res.json(product);
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const body = req.body;
-  const newProduct = productService.create(body);
+  const newProduct = await productService.create(body);
   res
     .status(201)
     .json({
@@ -35,16 +36,16 @@ router.post('/', (req, res) => {
     });
 });
 
-router.patch('/:id', (req, res) => {
+router.patch('/:id', async (req, res) => {
   const { id } = req.params;
   const body = req.body;
-  const productUpdated = productService.update(+id, body);
+  const productUpdated = await productService.update(+id, body);
   res.json(productUpdated);
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   const { id } = req.params;
-  const deletedProduct = productService.delete(+id);
+  const deletedProduct = await productService.delete(+id);
   res.json({
     message: 'deleted',
     deletedProduct

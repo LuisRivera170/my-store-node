@@ -4,6 +4,8 @@ const routerApi = require('./app/routes');
 const app = express();
 const port = 3000;
 
+app.use(express.json());
+
 routerApi(app);
 
 app.get('/', (_, res) => {

@@ -2,6 +2,7 @@ const express = require('express');
 const routerApi = require('./src/app/routes');
 const swaggerUI = require('swagger-ui-express'),
       swaggerDocument = require('./swagger.json');
+const cors = require('cors');
 
 const { logErrors, errorHandler, boomErrorHandler } = require('./src/app/middlewares/error.handler');
 
@@ -10,6 +11,19 @@ const port = 3000;
 
 // Manejo de respuestas en tipo json
 app.use(express.json());
+
+// Cors
+const whiteList = ['http://127.0.0.1:5500'];
+const options = {
+  origin: (origin, callback) => {
+    if (!origin || whiteList.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Origin not allowed'));
+    }
+  }
+}
+app.use(cors(options));
 
 // Router
 routerApi(app);

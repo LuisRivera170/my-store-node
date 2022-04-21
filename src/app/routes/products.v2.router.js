@@ -10,6 +10,7 @@ router.get('', async (req, res) => {
   const { limit } = req.query;
   const products = await productService.find(+limit);
   res
+    .status(200)
     .json(products);
 });
 

@@ -1,7 +1,9 @@
 const express = require('express');
-const routerApi = require('./app/routes');
+const routerApi = require('./src/app/routes');
+const swaggerUI = require('swagger-ui-express'),
+      swaggerDocument = require('./swagger.json');
 
-const { logErrors, errorHandler, boomErrorHandler } = require('./app/middlewares/error.handler');
+const { logErrors, errorHandler, boomErrorHandler } = require('./src/app/middlewares/error.handler');
 
 const app = express();
 const port = 3000;
@@ -16,6 +18,13 @@ routerApi(app);
 app.use(logErrors);
 app.use(boomErrorHandler);
 app.use(errorHandler);
+
+// Swagger
+app.use(
+  '/api-docs',
+  swaggerUI.serve,
+  swaggerUI.setup(swaggerDocument)
+);
 
 app.get('/', (_, res) => {
   res.send('Hello my server with express')
